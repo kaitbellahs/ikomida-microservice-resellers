@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: resellers-service
+  labels:
+    app: resellers-service
+  namespace: ikomida
+spec:
+  selector:
+     app: resellers
+  ports:
+  - protocol: TCP
+    port: 1988
