@@ -10,14 +10,22 @@ import {
   objHasProp,
 } from '@ikomida/shared-backend';
 
+const host: any = {
+  development: 'https://dev.reseller.ikomida.com/',
+  homologation: 'https://hmlg.reseller.ikomida.com/',
+  production: 'https://reseller.ikomida.com/',
+}
+
 export default class Reseller {
   randCodes;
   limit = 10;
   logger;
+  host
 
   constructor(logger: Utils.Logger) {
     this.randCodes = new Utils.RandCodes();
     this.logger = logger;
+    this.host = host[process.env.NODE_ENV ?? 'development'];
   }
 
   async getResellers(identity: Types.Classes.CUser, timestamp = 0) {
@@ -217,11 +225,11 @@ export default class Reseller {
             Utils.Email.RESELLER_REGISTRATION_SUCCESSFULL,
             'iKomida vendedor',
             userModel?.name,
-            'https://reseller.ikomida.com/apps',
+            `${this.host}apps`,
             userModel?.phone,
             newPassword,
             'iKomida',
-            'https://reseller.ikomida.com/',
+            this.host,
           );
           const emailPayload = new Types.Classes.CAMQPPayload<Types.Classes.CEmail>({
             method: 'send',
