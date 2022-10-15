@@ -90,8 +90,18 @@ spec:
                 secretKeyRef:
                   name: environment
                   key: DBPORT
-            - name: PROJID
+            - name: MQUSER
               valueFrom:
                 secretKeyRef:
                   name: environment
-                  key: PROJID
+                  key: MQUSER
+            - name: MQPASS
+              valueFrom:
+                secretKeyRef:
+                  name: environment
+                  key: MQPASS
+            - name: MQVHOST
+              valueFrom:
+                secretKeyRef:
+                  name: environment
+                  key: MQVHOST
