@@ -295,20 +295,20 @@ export default class Reseller {
             'iKomida',
             this.host
           )
-          const emailPayload = new Types.Classes.CAMQPPayload<Types.Classes.CEmail>({
-            method: 'send',
-            object: {
-              from: {
-                email: `no-replay@ikomida.com`,
-                name: `iKomida`
-              },
-              to: {
-                email: userModel?.email,
-                name: `${userModel?.name} ${userModel?.lastName}`
-              },
-              message
-            }
+          const emailPayload = new Types.Classes.CAMQPPayload<Types.Classes.CAMQPPayloadObject>()
+          emailPayload.method = 'send'
+          const messagePayload: Types.Classes.CEmail = Types.Classes.CEmail.fromObject({
+            from: {
+              email: `no-replay@ikomida.com`,
+              name: `iKomida`
+            },
+            to: {
+              email: userModel?.email,
+              name: `${userModel?.name} ${userModel?.lastName}`
+            },
+            message
           })
+          emailPayload.object = messagePayload
           const amqp = new Domain.RabbitMQ(this.logger)
           await amqp?.publish(Domain.RabbitMQ.EMAIL_QUEUE, emailPayload)
           await amqp?.close()
