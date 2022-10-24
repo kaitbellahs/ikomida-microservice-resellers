@@ -225,7 +225,7 @@ export default class Reseller {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
-      if (!payload.validate() || !this.validateObject(payload)) {
+      if (!this.validateObject(payload)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_MISSING_DATA)
         return error.logAndReturn(this.logger)
       }
@@ -287,7 +287,7 @@ export default class Reseller {
         try {
           const message = new Utils.Email(
             Utils.Email.RESELLER_REGISTRATION_SUCCESSFULL,
-            'iKomida vendedor',
+            'iKomida revendedor',
             userModel?.name,
             `${this.host}apps`,
             userModel?.phone,
@@ -497,6 +497,6 @@ export default class Reseller {
   }
 
   validateObject(object: any) {
-    return objHasProp(['email', 'areaCode', 'phone', 'cpf', 'name', 'lastName'], object)
+    return objHasProp(['email', 'areaCode', 'phone', 'identity', 'name', 'lastName'], object)
   }
 }
