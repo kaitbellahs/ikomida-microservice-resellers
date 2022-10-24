@@ -19,10 +19,10 @@ export default class UserBankAccount {
       const where =
         timestamp && timestamp != 0 && Number(Logics.Finances.toNumber(timestamp)) == timestamp
           ? {
-              createdAt: {
-                [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
-              }
+            createdAt: {
+              [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
             }
+          }
           : {}
       if (BackendTypes.Roles.ADMIN === role) {
         userPIXKeyModels = await DBModels.UserPIXKeyModel.findAll({
@@ -83,7 +83,7 @@ export default class UserBankAccount {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
-      if (!payload.validate() || !this.validateObject(payload)) {
+      if (!payload.validate()) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_MISSING_DATA)
         return error.logAndReturn(this.logger)
       }
@@ -98,26 +98,26 @@ export default class UserBankAccount {
       }
       const userPIXKeyModel: DBModels.UserPIXKeyModel = await currentUserModel.$create('userPIXKey', {
         name: payload?.name,
-        type: payload?.kind?.id,
+        type: payload?.kind,
         key: payload?.key,
         bank: payload?.bank,
         agency: payload?.agency,
         account: payload?.account,
-        status: Types.Types.TransactionStatus.PENDING
+        status: Types.Types.TransactionStatus.PENDING.id
       })
-      const userPIXKey: Types.Classes.CPix = Types.Classes.CPix.fromObject({
-        id: userPIXKeyModel.id,
-        name: userPIXKeyModel.name,
-        type: userPIXKeyModel.type,
-        key: userPIXKeyModel.key,
-        bank: userPIXKeyModel.bank,
-        agency: userPIXKeyModel.agency,
-        account: userPIXKeyModel.account,
-        note: userPIXKeyModel.note,
-        status: userPIXKeyModel.status,
-        createdAt: userPIXKeyModel.createdAt,
-        timestamp: userPIXKeyModel.createdAt.getTime()
-      })
+      const userPIXKey: Types.Classes.CPix = Types.Classes.CPix.init(
+        userPIXKeyModel.name ?? '',
+        userPIXKeyModel.type ?? Types.Types.TPIX.EVP,
+        userPIXKeyModel.key,
+        userPIXKeyModel.bank,
+        `${userPIXKeyModel.agency}`,
+        `${userPIXKeyModel.account}`,
+        userPIXKeyModel.note,
+        userPIXKeyModel.status,
+        userPIXKeyModel.createdAt,
+        userPIXKeyModel.id,
+        userPIXKeyModel.createdAt.getTime()
+      )
       return new Utils.Return(true, userPIXKey)
     } catch (exception: any) {
       const error = new Utils.iKomidaError(
@@ -126,9 +126,5 @@ export default class UserBankAccount {
       )
       return error.logAndReturn(this.logger)
     }
-  }
-
-  validateObject(object: any) {
-    return objHasProp(['type', 'name'], object)
   }
 }
