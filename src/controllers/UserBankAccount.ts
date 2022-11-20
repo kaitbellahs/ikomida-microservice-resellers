@@ -10,8 +10,8 @@ export default class UserBankAccount {
 
   async getUserBankAccounts(identity: Types.Classes.CUser, timestamp: number) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_GET_RESELLERS_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -19,12 +19,12 @@ export default class UserBankAccount {
       const where =
         timestamp && timestamp != 0 && Number(Logics.Finances.toNumber(timestamp)) == timestamp
           ? {
-            createdAt: {
-              [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
+              createdAt: {
+                [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
+              }
             }
-          }
           : {}
-      if (BackendTypes.Roles.ADMIN === role) {
+      if (Types.Types.TRoles.ADMIN === role) {
         userPIXKeyModels = await DBModels.UserPIXKeyModel.findAll({
           where,
           order: [['createdAt', 'DESC']],
@@ -78,8 +78,8 @@ export default class UserBankAccount {
   async newUserBankAccount(identity: Types.Classes.CUser, input: any) {
     try {
       const payload: Types.Classes.CPix = Types.Classes.CPix.fromObject(input)
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
