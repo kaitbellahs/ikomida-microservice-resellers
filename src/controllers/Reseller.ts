@@ -39,10 +39,10 @@ export default class Reseller {
       const where =
         timestamp && timestamp != 0 && Number(Logics.Finances.toNumber(timestamp)) == timestamp
           ? {
-              createdAt: {
-                [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
-              }
+            createdAt: {
+              [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
             }
+          }
           : {}
       if (Types.Types.TRoles.ADMIN === role) {
         const resellerModels = await DBModels.UserModel.findAll({
@@ -57,7 +57,7 @@ export default class Reseller {
         })
         resellers = resellerModels.map(resellerModel => {
           return Types.Classes.CUser.init(
-            '',
+            resellerModel.role ?? Types.Types.TRoles.RESELLER,
             resellerModel.name ?? '',
             resellerModel.lastName ?? '',
             '',
@@ -79,6 +79,8 @@ export default class Reseller {
             undefined,
             undefined,
             resellerModel.avatar,
+            undefined,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -104,7 +106,7 @@ export default class Reseller {
         })
         resellers = resellerModels?.map(resellerModel => {
           return Types.Classes.CUser.init(
-            '',
+            resellerModel.role ?? Types.Types.TRoles.RESELLER,
             resellerModel.name ?? '',
             resellerModel.lastName ?? '',
             '',
@@ -158,10 +160,10 @@ export default class Reseller {
       const where =
         timestamp && timestamp != 0 && Number(Logics.Finances.toNumber(timestamp)) == timestamp
           ? {
-              createdAt: {
-                [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
-              }
+            createdAt: {
+              [Domain.SqlDB.Op.lt]: new Date(Number(Logics.Finances.toNumber(timestamp)))
             }
+          }
           : {}
       if (Types.Types.TRoles.ADMIN === role) {
         const contractModels = await DBModels.ContractModel.findAll({
