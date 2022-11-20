@@ -30,8 +30,8 @@ export default class Reseller {
 
   async getResellers(identity: Types.Classes.CUser, timestamp = 0) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_GET_RESELLERS_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -44,11 +44,11 @@ export default class Reseller {
               }
             }
           : {}
-      if (BackendTypes.Roles.ADMIN === role) {
+      if (Types.Types.TRoles.ADMIN === role) {
         const resellerModels = await DBModels.UserModel.findAll({
           where: {
             ...{
-              role: BackendTypes.Roles.RESELLER
+              role: Types.Types.TRoles.RESELLER
             },
             ...where
           },
@@ -149,8 +149,8 @@ export default class Reseller {
 
   async getContracts(identity: Types.Classes.CUser, timestamp: number) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_GET_RESTAURANTS_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -163,7 +163,7 @@ export default class Reseller {
               }
             }
           : {}
-      if (BackendTypes.Roles.ADMIN === role) {
+      if (Types.Types.TRoles.ADMIN === role) {
         const contractModels = await DBModels.ContractModel.findAll({
           where,
           order: [['createdAt', 'DESC']],
@@ -220,8 +220,8 @@ export default class Reseller {
   async newReseller(identity: Types.Classes.CUser, input: any) {
     try {
       const payload: Types.Classes.CUser = Types.Classes.CUser.fromObject(input)
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -240,7 +240,7 @@ export default class Reseller {
       }
       const userModelCount = await DBModels.UserModel.count({
         where: {
-          role: BackendTypes.Roles.RESELLER,
+          role: Types.Types.TRoles.RESELLER,
           [Domain.SqlDB.Op.or]: [
             {
               email: payload?.email
@@ -264,7 +264,7 @@ export default class Reseller {
       })
       const newPassword = passwordGenerator(8)
       const userModel: DBModels.UserModel = await referralModel.$create('user', {
-        role: BackendTypes.Roles.RESELLER,
+        role: Types.Types.TRoles.RESELLER,
         name: payload?.name,
         lastName: payload?.lastName,
         email: payload?.email,
@@ -279,7 +279,7 @@ export default class Reseller {
         )
         return error.logAndReturn(this.logger)
       }
-      if (role && [BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER].includes(role)) {
+      if (role && [Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER].includes(role)) {
         const referredByModel = await currentUserModel.$get('referral')
         await referredByModel?.$add('users', userModel)
       }
@@ -333,8 +333,8 @@ export default class Reseller {
 
   async countRestaurants(identity: Types.Classes.CUser) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.RESELLER].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.RESELLER].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -362,8 +362,8 @@ export default class Reseller {
   async countResellers(identity: Types.Classes.CUser) {
     const bonusLevels = [5, 3, 1]
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -400,8 +400,8 @@ export default class Reseller {
 
   async revuneDetails(identity: Types.Classes.CUser) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -440,8 +440,8 @@ export default class Reseller {
 
   async revuneTotal(identity: Types.Classes.CUser) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
@@ -469,8 +469,8 @@ export default class Reseller {
 
   async lastRevune(identity: Types.Classes.CUser) {
     try {
-      const role = BackendTypes.Roles.valueOf(identity.role)
-      if (!role || ![BackendTypes.Roles.VENDOR, BackendTypes.Roles.RESELLER, BackendTypes.Roles.ADMIN].includes(role)) {
+      const role = identity.role
+      if (!role || ![Types.Types.TRoles.VENDOR, Types.Types.TRoles.RESELLER, Types.Types.TRoles.ADMIN].includes(role)) {
         const error = new Utils.iKomidaError(Utils.iKomidaError.IKOMIDA_RESELLER_SERVICE_NEW_RESELLER_UNAUTHORIZED)
         return error.logAndReturn(this.logger)
       }
