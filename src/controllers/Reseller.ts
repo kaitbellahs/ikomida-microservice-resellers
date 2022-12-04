@@ -285,35 +285,25 @@ export default class Reseller {
         const referredByModel = await currentUserModel.$get('referral')
         await referredByModel?.$add('users', userModel)
       }
-      if (userModel) {
+      if (userModel && userModel.email) {
         try {
           const message = new Utils.Email(
             Utils.Email.RESELLER_REGISTRATION_SUCCESSFULL,
-            'iKomida revendedor',
+            'iKomida Reseller',
             userModel?.name,
             `${this.host}apps`,
             userModel?.phone,
             newPassword,
-            'iKomida',
-            this.host
+            this.host,
+            'iKomida'
           )
-          const emailPayload = new Types.Classes.CAMQPPayload<Types.Classes.CAMQPPayloadObject>()
-          emailPayload.method = 'send'
-          const messagePayload: Types.Classes.CEmail = Types.Classes.CEmail.fromObject({
-            from: {
-              email: `no-replay@ikomida.com`,
-              name: `iKomida`
-            },
-            to: {
-              email: userModel?.email,
-              name: `${userModel?.name} ${userModel?.lastName}`
-            },
-            message
-          })
-          emailPayload.object = messagePayload
-          const amqp = new Domain.RabbitMQ(this.logger)
-          await amqp?.publish(Domain.RabbitMQ.EMAIL_QUEUE, emailPayload)
-          await amqp?.close()
+          await Utils.Email.sendEmail(
+            this.logger,
+            userModel.email,
+            `${userModel.name} ${userModel.lastName}`,
+            message,
+            'iKomida Reseller'
+          )
         } catch (exception: any) {
           const error = new Utils.iKomidaError(
             Utils.iKomidaError.IKOMIDA_ORDERS_SERVICE_PAGSEGURO_WEBHOOK_PUSH_NOTIFICATION_EXCEPTION_2,
